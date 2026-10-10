@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>J4CS SENSI</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;background:#0a0a0a;color:white;
+  font-family:Arial,sans-serif;padding:20px;
+}
+.container{
+  max-width:440px;margin:auto;background:#171717;
+  border:1px solid #ff2525;border-radius:18px;
+  padding:22px;box-shadow:0 0 18px #ff252533;
+}
+h1{text-align:center;color:#ff2929}
+p{text-align:center;color:#bbb}
+label{display:block;margin-top:17px;font-weight:bold}
+select,input,button{
+  width:100%;padding:13px;margin-top:8px;
+  border-radius:9px;border:1px solid #444;
+  background:#252525;color:white;font-size:16px;
+}
+button{
+  background:#ed2020;border:none;font-weight:bold;
+  margin-top:22px;cursor:pointer;
+}
+.result{
+  display:none;background:#242424;padding:15px;
+  border-radius:12px;margin-top:20px;
+}
+.stat{
+  display:flex;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid #444;
+}
+small{color:#aaa}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>J4CS SENSI</h1>
+<p>🔥 GENERADOR DE SENSIBILIDAD 🔥</p>
+
+<label>Sistema operativo</label>
+<select id="os" onchange="marcas()">
+<option value="Android">Android</option>
+<option value="iPhone">iPhone</option>
+</select>
+
+<label>Marca del celular</label>
+<select id="marca">
+<option>Samsung</option>
+<option>Xiaomi</option>
+<option>Motorola</option>
+<option>Tecno</option>
+<option>Infinix</option>
+<option>Huawei</option>
+<option>OPPO</option>
+<option>Realme</option>
+<option>Google Pixel</option>
+<option>Otra marca</option>
+</select>
+
+<label>Modelo exacto</label>
+<input id="modelo" placeholder="Ej: Galaxy A03">
+
+<label>Rendimiento del celular</label>
+<select id="rendimiento">
+<option value="bajo">Bajo / se traba</option>
+<option value="medio" selected>Medio / normal</option>
+<option value="alto">Alto / fluido</option>
+</select>
+
+<label>Estilo de juego</label>
+<select id="estilo">
+<option value="equilibrado">Equilibrado</option>
+<option value="arrastre">Arrastre a la cabeza</option>
+<option value="precision">Precisión y control</option>
+</select>
+
+<button onclick="generar()">GENERAR MI SENSIBILIDAD</button>
+
+<div class="result" id="resultado">
+<h2 style="color:#ff3030;text-align:center">
+TU CONFIGURACIÓN
+</h2>
+<div id="datos"></div>
+<p><small>Valores iniciales estimados. Pruébalos en entrenamiento y ajusta según tu mira.</small></p>
+<button onclick="copiar()">COPIAR CONFIGURACIÓN</button>
+</div>
+</div>
+
+<script>
+function marcas(){
+ const os=document.getElementById("os").value;
+ const marca=document.getElementById("marca");
+ if(os==="iPhone"){
+   marca.innerHTML='<option>Apple</option>';
+ }else{
+   marca.innerHTML=`
+   <option>Samsung</option><option>Xiaomi</option>
+   <option>Motorola</option><option>Tecno</option>
+   <option>Infinix</option><option>Huawei</option>
+   <option>OPPO</option><option>Realme</option>
+   <option>Google Pixel</option><option>Otra marca</option>`;
+ }
+}
+function generar(){
+ const modelo=document.getElementById("modelo").value.trim();
+ if(!modelo){alert("Escribe el modelo de tu celular");return;}
+ const rendimiento=document.getElementById("rendimiento").value;
+ const estilo=document.getElementById("estilo").value;
+ let base=rendimiento==="bajo"?150:
+          rendimiento==="alto"?180:165;
+ if(estilo==="arrastre")base+=15;
+ if(estilo==="precision")base-=15;
+ base=Math.max(0,Math.min(200,base));
+ const valores=[
+ ["General",base],
+ ["Punto rojo",base-5],
+ ["Mira 2x",base-15],
+ ["Mira 4x",base-30],
+ ["Mira francotirador",base-65],
+ ["Cámara libre",base+5],
+ ["Botón de disparo",estilo==="arrastre"?52:48]
+ ];
+ valores.forEach(v=>v[1]=Math.max(0,Math.min(200,v[1])));
+ const marca=document.getElementById("marca").value;
+ let html="";
+ valores.forEach(v=>{
+ html+=`<div class="stat"><span>${v[0]}</span>
+ <b>${v[1]}${v[0]==="Botón de disparo"?"%":""}</b></div>`;
+ });
+ document.getElementById("datos").innerHTML=html;
+ document.getElementById("resultado").style.display="block";
+ window.configTexto="J4CS SENSI - "+marca+" "+modelo+"\n"+
+ valores.map(v=>v[0]+": "+v[1]).join("\n");
+}
+function copiar(){
+ if(!window.configTexto)return;
+ if(navigator.clipboard && navigator.clipboard.writeText){
+ navigator.clipboard.writeText(window.configTexto)
+ .then(()=>alert("¡Configuración copiada!"))
+ .catch(()=>alert(window.configTexto));
+ }else{alert(window.configTexto);}
+}
+</script>
+</body>
+</html>
